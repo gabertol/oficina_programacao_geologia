@@ -1,0 +1,396 @@
+---
+title: "Aula 2 - Introdução ao tidyverse"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+editor: visual
+---
+
+# Aula 2
+
+Dr. Gabriel Bertolini
+
+2º semestre 2023 - PPGGEO UFRGS
+
+Oficina de programação
+
+Aula introdutória sobre tidyverse.
+
+# Bibliotecas
+
+Função install.packages pode ser usada para baixar arquivos do CRAN - pacotes da comunidade "oficiais" que estão alinhados as praticas e estilo de programação padronizadas do R. Pacotes do github pode ser instalados, utilizando uma função do pacote devtools: devtools::install.github("link_do_github_exemplo:gabertol/ztR")
+
+os pacotes só precisam ser instalados uma vez, e carregados sempre que necessário usando a função library().
+
+```{r, warning=FALSE}
+#install.packages("tidyverse") # Instalar se necessário
+library(tidyverse)
+
+```
+
+# Funções de R base úteis
+
+```{r}
+vetor<-c(1.1,4.2,2.9,9,1,4,5,0.0001,NA)
+
+# média
+mean(vetor,na.rm=TRUE) #média
+# desvio padrão
+sd(vetor)
+# minimo
+min(vetor) 
+# maximo
+max(vetor) 
+# extensão
+length(vetor) 
+# cria sequencia de valores
+A<-seq(from=pi,
+    to=pi^2,
+    by=pi/4) 
+
+length(A)
+# gerador de números com distribuição normal
+PER<-rnorm(n=1000000,mean=350,sd=5)
+
+mean(PER)
+sd(PER)
+
+# gerador de numeros randomicos
+rep(c("A","B","C"), 2) 
+```
+
+# Introdução ao tidyverse
+
+A biblioteca guarda-chuva tidyverse inclui uma serie de pacotes, cada uma para seu fim. Por hora, vamos explorar o pacote dplyr que trata de manipulação básica de bancos de dados. Para isso, vamos primeiramente importar um banco de dados. Para importar, vamos usar a função read.csv
+
+```{r}
+BD<-read.csv("./data/geoquimica_granito.csv")
+
+# Roda o objeto no console
+#BD 
+
+
+#Abre tabela estilo excel/ selecionar o objeto com mouse e apertar F2 é a mesma coisa
+#view(BD) 
+
+BD<-BD %>% as_tibble()  # tibble é um tipo particular de dataframe do tidyverse, que facilita a leitura no prompt
+```
+
+Trata-se de um banco de dados de XXXX et al. Aqui vamos usar uma série de funções do dplyr e tidyr para operações nesse banco de dados.
+
+### Selecionar colunas com select()
+
+```{r}
+# Selecionar algumas colunas
+# Usar função names() para examinar quais colunas o banco tem
+names(BD) # o banco tem 117 colunas, vamos selecionar algumas colunas
+
+BD %>%  # reparar o uso do comando pype esse codigo significa select(BD,SiO2:Cd)- as funções
+  select(SiO2:Cd) # selecionar elementos quimicos - SiO2 até Cd
+
+BD %>% 
+  select(X,Tectonic_setting,Latitude,Longitude,Albite:Corundum) %>% # selecionar colunas X, Tectonic_setting, Latitude,Longitude e minerais (Albite:Corundum)
+  select(-X) # usar - pra retirar a variavel
+
+```
+
+### Filtrar colunas com filter()
+
+```{r}
+# Filtrar tectonic_setting 
+unique(BD$Tectonic_setting) # ver valores unicos de Tectonic_setting para saber qual variavel filtrar
+
+BD %>% 
+  select(X,Tectonic_setting,Latitude,Longitude,Albite:Corundum) %>% # reparar funções encadeadas
+  filter(Tectonic_setting=="OCEANIC PLATEAU") # filtrando somente o Oceanic Plateau
+
+BD %>% 
+  filter(Tectonic_setting=="CONTINENTAL FLOOD BASALT",
+         SiO2<60,
+         SiO2>50,
+         TiO2>1) # filtrar varias colunas - separadas por , 
+
+BD %>% 
+  filter(Tectonic_setting %in% c("OROGENIC BELT",
+                                 "INTRAPLATE VOLCANICS",
+                                 "ARCHAEAN CRATONS",
+                                 "CONVERGENT MARGIN")) # filtrar pelos strings usando %in% e c()
+
+BD %>% 
+  filter(Tectonic_setting== "OROGENIC BELT" & SiO2>60) # filtrar condicionalmente
+```
+
+### Criar colunas com mutate(), agrupamento com group(), arredondamento com round()
+
+```{r}
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  mutate(l_Si=log(SiO2)) #cria nova coluna com o log da coluna SiO2
+
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  mutate(across(.cols=SiO2:MgO,~log(.x))) # Operações em massa
+
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>% 
+  mutate(contagem=n())
+  
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>% 
+  count()
+
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>%  # Agrupa os valores por grupos baseados nos tipos tectonicos, ou seja, qualquer ação será realizada em diferentes "compartimentos" de dados- isso pode ser muito util para médias globais e de grupo.
+  mutate(across(SiO2:MgO,~ifelse(.x==0,mean(.x),.x)),  # substituir 0 por média por grupo (1 para cada valor de tectonic setting diferente) 
+         SiO2=round(SiO2,digits=2)) #arredondar para dois digitos
+  
+
+```
+
+### 
+
+### Contar com count() ou remoldar dataframe com reframe()
+
+```{r}
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>%  # Agrupa os valores por grupos baseados nos tipos tectonicos, ou seja, qualquer ação será realizada em diferentes "compartimentos" de dados- isso pode ser muito util para médias globais e de grupo.
+  mutate(across(SiO2:MgO,~ifelse(.x==0, mean(.x),.x)),  # substituir 0 por média por grupo (1 para cada valor de tectonic setting diferente) 
+         across(SiO2:MgO,~round(.x,digits=2))) %>% 
+  reframe(n=n(),
+          across(.cols=SiO2:MgO,~round(mean(.x,na.rm = TRUE),2)))
+
+```
+
+## Alterando a forma do dataframe com pivot_longer e \_wider()
+
+```{r}
+# Dado longo
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>%  # Agrupa os valores por grupos baseados nos tipos tectonicos, ou seja, qualquer ação será realizada em diferentes "compartimentos" de dados- isso pode ser muito util para médias globais e de grupo.
+  mutate(across(SiO2:MgO,~ifelse(.x==0, mean(.x),.x)),  # substituir 0 por média por grupo (1 para cada valor de tectonic setting diferente) 
+         across(SiO2:MgO,~round(.x,digits=2))) %>% 
+  reframe(n=n(),
+          across(.cols=SiO2:MgO,~round(mean(.x,na.rm = TRUE),2))) %>%
+  pivot_longer(cols=SiO2:MgO)
+
+#dado largo
+BD %>% 
+  select(X,Tectonic_setting,SiO2:MgO) %>% 
+  group_by(Tectonic_setting) %>%  # Agrupa os valores por grupos baseados nos tipos tectonicos, ou seja, qualquer ação será realizada em diferentes "compartimentos" de dados- isso pode ser muito util para médias globais e de grupo.
+  mutate(across(SiO2:MgO,~ifelse(.x==0, mean(.x),.x)),  # substituir 0 por média por grupo (1 para cada valor de tectonic setting diferente) 
+         across(SiO2:MgO,~round(.x,digits=2))) %>% 
+  reframe(n=n(),
+          across(.cols=SiO2:MgO,~round(mean(.x,na.rm = TRUE),2))) %>%
+  pivot_longer(cols=SiO2:MgO) %>% # Alongar dataframe para forma tidy
+  ungroup() %>% 
+  group_by(name) %>%  
+  pivot_wider(id_cols=Tectonic_setting,values_from=value) # Expandir lateralmente o dataframe
+
+
+```
+
+# Estudo de caso - Vulcões do Tidytuesday
+
+Objetivo: Revisar tidyverse e fazer exercícios. Os dados são disponibilizados no link, e contem o video para analise desse banco no youtube (https://github.com/rfordatascience/tidytuesday/tree/master).
+
+Esse link apresenta mais infos sobre o banco de dado e fontes:
+
+https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-05-12/readme.md
+
+Importação de dados de um banco em excel com readxl:
+
+```{r}
+# Ilustrativo
+#volc<-read_excel("volcano.xlsx") %>% 
+#  as_tibble()
+```
+
+Opção B, baixar diretamente do github do tidytuesday:
+
+```{r}
+volc <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-12/volcano.csv')
+```
+
+## select()
+
+```{r}
+
+volc %>% select(volcano_name,-country,latitude:elevation)
+
+volc %>% select(!latitude:elevation)
+
+volc %>% select(starts_with("population"))
+
+volc %>% select(contains("within"))
+
+#- **stars_with()**: colunas que começam com um prefixo
+
+#- **ends_with()**: colunas que terminam com um sufixo
+
+#- **contains()**: colunas que contêm uma string
+
+#- **last_col()**: última coluna
+```
+
+## filter()
+
+```{r}
+volc %>% select(volcano_name,country,latitude:elevation) %>% 
+         filter(country== "Antarctica")
+
+volc %>% select(volcano_name,country,latitude:elevation) %>% 
+         filter(!country== "Chile") %>% 
+         filter(elevation>1000,
+                latitude>0,
+                longitude>0)
+
+# %in% comando logico para declarar vetores para filter
+
+volc %>% select(volcano_name,country,latitude:elevation) %>% 
+         filter(!country %in%  c("Chile","Argentina","Japan"))
+
+# | ou
+
+# & e
+
+volc %>% 
+  select(volcano_name, country, latitude:elevation) %>% 
+  filter(country == "Antarctica" | latitude < 10)
+
+volc %>% 
+  select(volcano_name, country, latitude:elevation) %>% 
+  filter(country == "Antarctica" & elevation > 500)
+```
+
+## mutate()
+
+```{r}
+volc %>% 
+  select(volcano_name, country,last_eruption_year) %>% 
+  filter(!last_eruption_year== "Unknown") %>% 
+  mutate(last_eruption_year=as.numeric(last_eruption_year),
+         ultima_erupcao=(2022-last_eruption_year),
+         ultima_erupcao_milhar=ultima_erupcao/1000,
+         ultima_erupcao_milhao=ultima_erupcao/1000000)  
+
+volc %>% 
+  mutate(rocha=case_when(
+        major_rock_1 %in% c("Andesite / Basaltic Andesite","Basalt / Picro-Basalt" ,"Trachyte / Trachydacite","Trachyandesite / Basaltic Trachyandesite")~"vulcanica basica",
+    major_rock_1 %in% c("Phonolite","Foidite","Trachybasalt / Tephrite Basanite","Phono-tephrite /  Tephri-phonolite")~"vulcanica alcalina",
+    TRUE~"volcanica acida")) %>% 
+  count(rocha)
+
+
+unique(volc$major_rock_1)
+
+```
+
+## Count e arrange()
+
+```{r}
+volc %>% 
+  count(country) %>% 
+  arrange(desc(n))
+
+volc %>% 
+  count(country) %>% 
+  arrange(n)
+```
+
+## Group_by ()
+
+```{r}
+volc %>% 
+  filter(!last_eruption_year=="Unknown") %>% 
+  group_by(last_eruption_year,country) %>% 
+  count(last_eruption_year,sort = TRUE) %>%  
+  ungroup()
+
+```
+
+Summarise ou reframe()
+
+```{r}
+# Função SE
+SE<-function(vetor,IC){
+  SD<-sd(vetor)
+  N<-length(vetor)
+  SE<-(SD*IC)/sqrt(N)
+ 
+   return(
+    SE
+  )
+}
+
+# Summarise
+volc %>% 
+  group_by(country) %>% 
+  summarise(n=n(),
+            media_pop_5km=mean(population_within_5_km),
+            sd_pop_km=sd(population_within_5_km),
+            se_pop_5km=SE(population_within_5_km,1),
+            max_pop_5km=max(population_within_5_km),
+            min_pop_5km=min(population_within_5_km)) %>% 
+  arrange(desc(media_pop_5km)) %>% 
+  filter(n>15) %>% 
+  mutate(across(.cols=media_pop_5km:min_pop_5km,~round(.x,digits=0)))
+
+# México
+#n=28
+
+#269105.1 ± 206295.9 habitantes(sigma 1)
+
+# Guatemala
+# n = 17
+# 63078	± 21362 habitantes	
+```
+
+#3 Exercicio
+
+\- 1) Em qual país existem mais vulcões?
+
+```{r}
+volc %>% 
+  count(country,sort=TRUE)
+
+volc %>% 
+  group_by(country) %>% 
+  summarise(n=n()) %>% 
+  arrange(desc(n))
+```
+
+\- 2) Nesse país, qual o tipo de vulcão mais comum?
+
+```{r}
+volc %>% 
+  filter(country=="United States") %>% 
+  count(primary_volcano_type,sort=TRUE)
+```
+
+\- 3) Na América do Sul, quantos e quais vulcões entraram em erupção em 2020?
+
+```{r}
+volc %>% 
+  filter(region=="South America",
+         last_eruption_year==2020) %>% 
+  count(volcano_name,sort=TRUE)
+```
+
+\- 4) Quais os países nos quais os vulcões apresentam maior risco para a população local (até 100 km)? Filtre países em que existam mais de 20 vulcões.
+
+```{r}
+volc %>% 
+  group_by(country) %>% 
+  summarise(n=n(),
+            media=mean(population_within_100_km),
+            se=SE(population_within_100_km,1)) %>% 
+  filter(n>20) %>% 
+  arrange(desc(media))
+```

@@ -1,0 +1,558 @@
+---
+title: "Aula 1 - Introdução ao R"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+editor: visual
+---
+
+# Aula 1
+
+Dr. Gabriel Bertolini
+
+2º semestre 2023 - PPGGEO UFRGS
+
+Oficina de programação
+
+Aula de introdução ao R, incluindo variaveis, objetos, funções.
+
+## R
+
+Linguagem de programação colaborativa - CRAN
+
+Orientada ao objeto e programação funcional com comando pype native e tidyverse
+
+Bibliotecas podem ser baixadas diretamente via console com install.packages("nome_do_pacote"), ou direto do Github com a função remotes::
+
+## Tidyverse
+
+Estilo de programação funcional baseado na encadeação de funções através do operador %\>% com funções uteis para limpeza, organização, modelamento e plotagem de dados- através de varios pacotes especificios.
+
+-   **dplyr -** estabelece o %\>% para prog. funcional , e funções base para manipulação de banco de dados, como criação e manipulação de colunas, seleção de colunas, filtragem entre outros.
+
+-   **ggplot -** gráficos, mapas
+
+-   **purr -** funções para iteração de função (map())
+
+-   **tidyr -** funções para manipular banco de dados, como nest(), pivot_longer e \_wider()
+
+-   **stringr-** funções para dados string (character), para limpeza, tokenização e outros.
+
+## Bibliografia
+
+**R for Data Science (2e) -** https://r4ds.hadley.nz/ ou em espanhol (https://es.r4ds.hadley.nz/) na 1 edição
+
+**Geocomputation with R** - https://r.geocompx.org/ ou em espanhol em https://r.geocompx.org/es/
+
+**The R Graph Gallery -** https://r-graph-gallery.com/
+
+**Stack overflow** - https://stackoverflow.com/
+
+**Canais de Youtube**
+
+**R ladies e Beatriz Milz** (https://beamilz.com/talks/)
+
+**Julia Silge** https://www.youtube.com/\@JuliaSilge
+
+**Geostats guy** (Python e R para geoestatistica) https://www.youtube.com/\@GeostatsGuyLectures
+
+**Posit** - videos sobre pacotes tidyverse - https://www.youtube.com/\@PositPBC/videos
+
+## Operações matemáticas
+
+```{r}
+5 + 2 #soma
+
+10 - 8 #subtração
+
+8.2 / 2 #divisão
+
+5 * 2 #multiplicação
+
+5 ** 3 #elevado ao cubo
+
+5 ^ 3 #elevado ao cubo
+
+6.02 * 10^-23 # Número de Avogrado
+6.02e-23 # Número de Avogrado (mais simples)
+
+sqrt(81) #raiz quadrada
+
+exp(8) # Exponencial
+
+log(5) #log natural
+
+log10(5) #log base 10
+
+pi # pi
+
+5 + (3 * 5 / 2) #operações mais elaboradas
+```
+
+## Criar variavéis
+
+```{r}
+A<-1 
+# Criar variavel
+
+A=1 
+# Criar variavel
+
+myNumber<-5 
+#Camel case - prática de escrever palavras ou frase, onde cada palavra é iniciada com maiúsculas e unidas sem espaços
+
+myNumber = 5
+
+myNumber
+
+myNumber <- 7.1
+
+calculo <- 5 + (3 * 5 / 2)
+
+myNumber * calculo
+
+```
+
+**Tipos e atribuição de objetos**
+
+-   numeric ou double - decimal
+
+-   integer - inteiro
+
+-   factor - categórica
+
+-   "character" - texto
+
+-   boleano - binário
+
+```{r}
+myInteger <- as.integer(myNumber) 
+# transformar objeto em inteiro
+
+myInteger <- is.integer(myNumber) 
+# perguntar se o objeto é inteiro
+
+myInteger
+
+myWord = "7" 
+
+#erro
+#myWord * 2
+
+myWord <- "geologia" 
+#string- texto puro
+
+myWord
+
+is.character(myWord)
+
+mySentence <- "esta é a minha frase"
+
+mySentence
+
+myFactor <- factor(myWord) 
+#valor categórica, com vários níveis
+
+myFactor
+
+is.factor(myFactor)
+
+#o R também trabalha com classes lógicas, TRUE or FALSE
+
+#variável boleana (binária, lógica)
+
+myTRUE <- TRUE
+
+4 == 4 
+#4 é igual a 4?
+
+a<-4
+
+a==4
+```
+
+## **Testando tipo de variável**
+
+```{r}
+class(myNumber) 
+#variável numérica - qualquer número DECIMAL
+
+class(myInteger)
+#variável numérica - número INTEIRO
+
+class(myWord) 
+#variável caracter
+
+class(myFactor)
+#fator
+
+class(mySentence)
+
+class(myTRUE)
+#variável lógica
+```
+
+## Operadores lógicos
+
+```{r}
+1>0 
+# Maior
+
+2>=2 
+#Maior igual
+
+1<2 
+# Menor
+
+1<=2 
+# Menor igual
+
+2==2 
+# igual
+
+1!=2 
+# diferente
+
+A<-data.frame(2,3,2,3)
+A$X2 
+# Indexador de coluna
+
+ifelse(2>1|1>3,"CERTO","ERRADO") 
+# | significa OU
+
+ifelse(2<1 &1>3,"CERTO","ERRADO") 
+# & E
+
+A<-c("A","B","C","D","E")
+c("A","B") %in% A 
+# dentro de um vetor
+```
+
+# Objetos
+
+## Vetor
+
+Estrutura mais simples de dados, consiste uma série de valores concatenados de 1 a n. Estes valores podem ser quaisquer tipo de variaveis com double, character e bolean.
+
+```{r}
+c("valores","quaisquer",999,pi,TRUE,1e-01) 
+# Função c() serve para concatenar
+
+myNumbers <- c(1, 2, 3, 4, 5) 
+#vetor - forma de concatenar uma serie de dados
+
+myNumbers2 <- 1:5
+
+myNumbers3 <- seq(from=1,to=10,by=0.5)
+
+myNumbers3[3]
+
+myNumbers3[myNumbers3 > 3]
+
+myNumbers[myNumbers >= 3]
+
+myNumbers[myNumbers!= 3]
+
+myNumbers3[myNumbers3 > 3]
+
+myWords = c("geoquímica", "estrutural", "estratigrafia") 
+#strings - fator
+
+myWords
+
+myWords[3]
+
+myWords[4]
+```
+
+### Operação com vetores
+
+```{r}
+meuVetor <- seq(85, 274, by = pi)
+
+#quanto menor o desvio padrão, mais homogênea é a amostra
+
+length(meuVetor)
+
+(n <- length(meuVetor))
+
+dp <- sd(meuVetor)
+#indica o grau de variação de um conjunto de elementos
+
+SE <- dp / sqrt(n)
+
+SE 
+#medida de variação de uma média amostral
+#em relação à média da população
+```
+
+## Matriz
+
+Forma mais simples de dado bidemensional (colunas e linhas). As colunas e linhas são identificadas por sua posição.
+
+```{r}
+myMatrix <- matrix(1:6,nrow=3) 
+
+myMatrix
+
+y <- seq(1, 7, by = 1)
+
+myMatrix2 <- matrix(y, nrow = 3, ncol = 2)
+
+myMatrix2
+
+# Juntando vetores para formar matriz
+
+x <- 1:4
+
+y <- 10:13
+
+cbind (x,y) 
+#cbind = Column Bind
+
+#as colunas devem ter o mesmo número de linhas
+
+rbind(x, y) 
+#rbind = Row Bind
+
+matriz <- cbind(x, y)
+
+matriz 
+#matrix matemática
+
+#indexação
+
+myMatrix[,1] 
+#coluna 1
+
+myMatrix[1,] 
+#linha 1
+
+myMatrix[2,2]
+# Linhas 2 e coluna 2
+```
+
+## Dataframe
+
+```{r}
+df <- as.data.frame(matriz)
+
+df 
+#banco de dados
+
+class(matriz)
+
+class(df)
+
+str(df) 
+# Estruturas
+
+length(df)
+
+# Indexação
+
+df$y
+
+length(df$y)
+
+x <- 1:4
+
+y <- 10:13
+
+DF2<-as.data.frame(cbind (x,y))
+
+DF2$y
+```
+
+## Lista
+
+```{r}
+
+#matrizes empilhadas
+x <- 1:4
+
+y <- 10:13
+
+z <- 2:7
+
+myList <- list(x, y, z)
+
+myList[[2]]
+
+myList[[3]][2]
+
+myLists <- list(matriz,z)
+
+# Indexação
+myLists[[1]][3,2]
+```
+
+# Funções
+
+Maneira útil para automatizar processo.
+
+Objetivo: função para verificar se um dado valor é maior do que outro
+
+```{r}
+maior <- function(parametro1, parametro2) {
+
+if (parametro1 < parametro2)
+
+{return(parametro2) }
+
+else {return(parametro1)}
+
+}
+
+soma<-function(A,B){
+
+A+B
+
+}
+
+a = 4
+
+b = 10
+
+soma(a,b)
+
+maior(soma(a^2,b-2),39)
+
+maior(parametro1 = 4, parametro2 = 10)
+
+maior(parametro1 = b, parametro2 = a)
+
+maior(b, a)
+```
+
+# Exercícios
+
+1\. Vetores e operações vetoriais
+
+a)  Criar vetores de diferentes tipos de variavéis
+
+    ```{r}
+    A<-c(1,2,3,4,5)
+    B<-c(TRUE,FALSE,FALSE,TRUE,TRUE)
+    C<-seq(from=1,to=10,by=0.5)
+    D<-c("A","B","C","D","B")
+    ```
+
+b)  Filtre por alguma variável;
+
+    ```{r}
+    A[A>2]
+    B[B==TRUE]
+    C[A>2.5 & A<7.5]
+    D[D=="B"]
+    ```
+
+2\. Crie uma dataframe com:
+
+a)  4 colunas: numerica, inteiros, caractere e booleana
+
+    ```{r}
+
+    # R base
+    data.frame(A[1:5],B[1:5],C[1:5],D[1:5])
+
+    # Tidy
+    DF<-tibble::tibble(A=A[1:5],
+                       B=B[1:5],
+                       C=C[1:5],
+                       D=D[1:5])
+
+    ```
+
+b)  Filtre por alguma variável;
+
+    ```{r}
+    DF[1:3]# Cols
+    DF[,1:3]# Cols
+    DF[1:3,]# Linhas
+    DF[1:3,1:3]# Cols & Linhas
+
+    DF[DF$D=="B",]
+    DF[DF$D %in% c("B","D"),]
+    DF[DF$C>=2,]
+    ```
+
+3\. Crie uma função com a seguinte expressão matemática X²+2Y+17
+
+```{r}
+funcao_quad<-function(X,Y){
+  return(
+    (X^2)+2*Y+17
+  )
+}
+
+funcao_quad(1,1)
+funcao_quad(2,2)
+```
+
+4\. Crie função para calcular erro padrão:
+
+$$
+SE = \frac {\sigma \times CI }{N}
+$$
+
+onde:
+
+-   Sigma (σ) = desvio padrão
+
+-   CI = intervalo de confiança (1 σ =68.3 % ,2σ = 95.4 % ,3σ=99.7 %,4σ=99.994% ....)
+
+-   N = Número de amostras
+
+```{r}
+SE<-function(vetor,IC){
+  SD<-sd(vetor)
+  N<-length(vetor)
+  SE<-(SD*IC)/sqrt(N)
+ 
+   return(
+    SE
+  )
+}
+set.seed(123)
+
+E<-rnorm (27.1,sd=2,n=50)
+
+hist(E)
+
+mean(E)
+
+SE(E,2)
+
+# 27.16881 ± 0.5237512
+```
+
+# Atalhos
+
+-   Alt + - (hífen): cria o símbolo de atribuição "\<-" no seu script.
+
+-   Ctrl + Shift + M: cria o operador %\>% (pipe) do pacote dplyr no script.
+
+-   Ctrl + Shift + C: Comenta ou descomenta a linha de código ou a seleção atual.
+
+-   Ctrl + Shift + K: Compilar em PDF no Markdown.
+
+-   Ctrl + Shift + H: opção para alterar o diretório de trabalho
+
+-   Ctrl + Shift + R: Insere uma nova seção de código.
+
+-   Ctrl + Shift + N: abre um novo script
+
+-   Ctrl + Alt + R: executa o código inteiro
+
+-   Ctrl + Alt + E: executa o código a partir da linha atual
+
+-   Ctrl + Alt + P: executa o próximo chunk
+
+-   Ctrl + L: limpar o console
+
+-   Ctrl + F: localizar e substituir
+
+-   Esc: interrompe o comando atualmente em execução.

@@ -1,0 +1,94 @@
+---
+title: "caderneta disciplina"
+format: html
+editor: visual
+bibliography: references.bib
+---
+
+# Alunos da oficina
+
+## João
+
+-   Cicloestratigrafia e validação de ciclos
+
+-   App com shinyR
+
+## Renata
+
+-   Mapa geral de dados de bacias produtoras
+
+-   Parte 1 - Data science clássico! Análise exploratória
+
+-   Parte 2 - Mapas
+
+## Jhenifer
+
+-   Obter dados de petrofisica de poço baseado em dados .dlis
+
+-   DLISIO para importar arquivos dlis e R para analise de dados
+
+-   analise de dados do Irati na região Sul
+
+## Paula
+
+-   Estratigrafia quantitiva em rochas sedimentares
+
+-   Fluviais distributivos
+
+-   Paleodiscarga
+
+## Daniela
+
+-   Dados de isótopos de carbono em sucessão carbonática
+
+-   plots de time-series
+
+-   plots de microfácies vs. isotopos de C
+
+## Mauren
+
+-   Simulação de injeção CO2 em subsuperficie
+
+-   Modelação atraves de dados fisicos de rocha
+
+-    Modelo base!
+
+## Angela
+
+## Ingrid
+
+## Monica
+
+## Sergio
+
+# Cronograma de aulas
+
+## Aula 1 (26/09/23)
+
+-   Apresentações dos alunos: Mauren, Daniela, Paula, Jhenifer, Renata e João
+
+-   Introdução ao R e fontes de informação de dados
+
+-   Download R e RStudio
+
+-   Objetivos da proxima aula: apreentações, criar projeto e importar dados
+
+## Aula 2 (03/10/23)
+
+## Aula 3 (10/10/23)
+
+## Aula 4 (17/10/23)
+
+## Aula 5 (24/10/23)
+
+## Aula 6 (31/10/23)
+
+## Aula 7 (07/11/23)
+
+## Aula 8 (14/11/23)
+
+## Aula 9 (21/11/23)
+
+## Aula 10 (28/11/23)
+
+## Aula 11 (05/12/23)
